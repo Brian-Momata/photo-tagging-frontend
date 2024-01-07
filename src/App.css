@@ -1,0 +1,49 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.game-instructions {
+  margin-bottom: 30px;
+}
+
+.instruction-image {
+  max-width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.main-image {
+  max-width: 100%;
+  height: auto;
+}
+
+footer {
+  margin-top: 50px;
+}
+
+footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
