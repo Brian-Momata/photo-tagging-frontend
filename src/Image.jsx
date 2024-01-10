@@ -1,9 +1,9 @@
-const Image = ({name, altname, handleClick}) => {
+const Image = ({name, altname, className, handleClick}) => {
   return (
     <img
         src={`src/assets/${name}`}
         alt={altname}
-        className="main-image"
+        className= {className}
         onClick={handleClick}
     />
   )

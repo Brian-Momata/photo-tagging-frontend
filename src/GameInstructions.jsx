@@ -17,6 +17,7 @@ const GameInstructions = () => {
       <Image
         name={"photo-tagging-characters.jpg"}
         altname={"Names of characters"}
+        className={"instruction-image"}
       />}
     </div>
   )
