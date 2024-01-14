@@ -1,6 +1,9 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import TargetingBox from "./TargetingBox";
 
 const MainGame = () => {
+  const [showTargetingBox, setShowTargetingBox] = useState(false);
+  const [targetingBoxCoords, setTargetingBoxCoords] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
 
   const characters = {
@@ -32,17 +35,25 @@ const MainGame = () => {
     };
     image.src = "src/assets/photo-tagging-main.jpg";
   });
+  
+  const handleClick = (e) => {
+    const canvas = canvasRef.current;
+    const boundingRect = canvas.getBoundingClientRect();
 
-  const handleClick = (event) => {
-    // I'm using this to confirm location of the characters
-    const bounding = canvasRef.current.getBoundingClientRect();
-    const x = event.clientX - bounding.left;
-    const y = event.clientY - bounding.top;
+    const x = e.clientX - boundingRect.left;
+    const y = e.clientY - boundingRect.top;
+
+    setTargetingBoxCoords({ x, y });
+    // Toggle the visibility of the targeting box
+    setShowTargetingBox((prev) => !prev);
   };
 
   return (
     <div className="main-game">
       <canvas ref={canvasRef} onClick={(e) => handleClick(e)}></canvas>
+      {showTargetingBox && (
+        <TargetingBox left={targetingBoxCoords.x} top={targetingBoxCoords.y}/>
+      )}
     </div>
   );
 };

@@ -37,6 +37,16 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
+.main-game {
+  position: relative;
+}
+
+.targeting-box {
+  width: 30px;
+  height: 40px;
+  border: 4px dotted #63f905;
+  position: absolute;
+}
 
 @media (max-width: 600px) {
   .container {
