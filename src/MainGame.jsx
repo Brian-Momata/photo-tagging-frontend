@@ -4,15 +4,8 @@ import TargetingBox from "./TargetingBox";
 const MainGame = () => {
   const [showTargetingBox, setShowTargetingBox] = useState(false);
   const [targetingBoxCoords, setTargetingBoxCoords] = useState({ x: 0, y: 0 });
+  const [characters, setCharacters] = useState(null);
   const canvasRef = useRef(null);
-
-  const characters = {
-    "Washington Carver": { ratio: [7.75, 64.90], coords: [] },
-    "Einstein": { ratio: [13.93, 38.70], coords: [] },
-    "Curie": { ratio: [30.55, 75.59], coords: [] },
-    "Newton": { ratio: [91.84, 87.63], coords: [] },
-    "Ride": { ratio: [57.66, 34.17], coords: [] },
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,7 +16,28 @@ const MainGame = () => {
       canvas.width = image.width;
       canvas.height = image.height;
       ctx.drawImage(image, 0, 0);
+    };
+    image.src = "src/assets/photo-tagging-main.jpg";
+  }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response = await fetch('http://localhost:3000/api/characters/index');
+        let data = await response.json();
+        setCharacters(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array to run only once when the component mounts
+
+  useEffect(() => {
+    if (characters) {
+      const canvas = canvasRef.current;
+     
       // Calculate coordinates based on ratios and canvas size
       Object.keys(characters).forEach((character) => {
         const [xRatio, yRatio] = characters[character].ratio;
@@ -32,10 +46,9 @@ const MainGame = () => {
 
         characters[character].coords = [xCoord, yCoord];
       });
-    };
-    image.src = "src/assets/photo-tagging-main.jpg";
-  });
-  
+    }
+  }, [characters]);
+
   const handleClick = (e) => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
