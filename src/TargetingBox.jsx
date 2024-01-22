@@ -30,16 +30,27 @@ const TargetingBox = ({ left, top, onCharacterSelect }) => {
   const targetingBoxRef = useRef(null);
 
   useEffect(() => {
-    // Calculate the width and height of the targeting box
-    // Calculate the location of the targeting box
-    // set the location of the targeting box
-    const targetingBoxRect = targetingBoxRef.current.getBoundingClientRect();
-    let [xCoord, yCoord] = [targetingBoxRect.left, targetingBoxRect.top];
-    let width = targetingBoxRef.current.clientWidth;
-    let height = targetingBoxRef.current.clientHeight;
+    const updateTargetingBoxCoords = () => {
+      // Calculate the width and height of the targeting box
+      // Calculate the location of the targeting box relative to the canvas
+      const targetingBoxRect = targetingBoxRef.current.getBoundingClientRect();
+      const canvasRect = targetingBoxRef.current.parentElement.getBoundingClientRect();
 
-    setTargetingBoxCoords({ x: [xCoord, xCoord + width], y: [yCoord, yCoord + height] });
+      let [xCoord, yCoord] = [targetingBoxRect.left - canvasRect.left, targetingBoxRect.top - canvasRect.top];
+      let width = targetingBoxRef.current.clientWidth;
+      let height = targetingBoxRef.current.clientHeight;
 
+      setTargetingBoxCoords({ x: [xCoord, xCoord + width], y: [yCoord, yCoord + height] });
+    };
+
+    // Call the function initially and add it to resize event listener
+    updateTargetingBoxCoords();
+    window.addEventListener('resize', updateTargetingBoxCoords);
+
+    return () => {
+      // Clean up the event listener on component unmount
+      window.removeEventListener('resize', updateTargetingBoxCoords);
+    };
   }, []);
 
   const boxStyle = {
