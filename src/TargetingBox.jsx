@@ -1,17 +1,16 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react";
 
-const Dropdown = () => {
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
+const Dropdown = ({ targetingBoxCoords, onCharacterSelect }) => {
 
   const handleSelectionChange = (e) => {
-    setSelectedCharacter(() => e.target.value);
+    const character = e.target.value;
+    onCharacterSelect(character, targetingBoxCoords)
   };
 
   return (
     <div>
       <select
         id="characterDropdown"
-        value={selectedCharacter}
         onChange={handleSelectionChange}
         className="character-dropdown"
       >
@@ -23,21 +22,36 @@ const Dropdown = () => {
         <option value="Ride">Ride</option>
       </select>
     </div>
-  )
-}
+  );
+};
 
+const TargetingBox = ({ left, top, onCharacterSelect }) => {
+  const [targetingBoxCoords, setTargetingBoxCoords] = useState(null);  
+  const targetingBoxRef = useRef(null);
 
-const TargetingBox = ({ left, top}) => {
+  useEffect(() => {
+    // Calculate the width and height of the targeting box
+    // Calculate the location of the targeting box
+    // set the location of the targeting box
+    const targetingBoxRect = targetingBoxRef.current.getBoundingClientRect();
+    let [xCoord, yCoord] = [targetingBoxRect.left, targetingBoxRect.top];
+    let width = targetingBoxRef.current.clientWidth;
+    let height = targetingBoxRef.current.clientHeight;
+
+    setTargetingBoxCoords({ x: [xCoord, xCoord + width], y: [yCoord, yCoord + height] });
+
+  }, []);
+
   const boxStyle = {
-    // subtracting the 10px so that the cursor positions better
     top: `${top - 10}px`,
     left: `${left - 10}px`,
-  }
+  };
+
   return (
-    <div className="targeting-box" style={boxStyle}>
-      < Dropdown />
+    <div className="targeting-box" style={boxStyle} ref={targetingBoxRef}>
+      <Dropdown targetingBoxCoords={targetingBoxCoords} onCharacterSelect={onCharacterSelect} />
     </div>
   );
-}
+};
 
 export default TargetingBox;
