@@ -51,8 +51,9 @@ const MainGame = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Tagging successful!', result);
+        alert(result['message']);
       } else {
+        // TODO: log these errors better
         console.error('Tagging failed!');
       }
     } catch (error) {
