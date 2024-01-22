@@ -4,7 +4,6 @@ import TargetingBox from "./TargetingBox";
 const MainGame = () => {
   const [showTargetingBox, setShowTargetingBox] = useState(false);
   const [targetingBoxCoords, setTargetingBoxCoords] = useState({ x: 0, y: 0 });
-  const [characters, setCharacters] = useState(null);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -20,35 +19,6 @@ const MainGame = () => {
     image.src = "src/assets/photo-tagging-main.jpg";
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let response = await fetch('http://localhost:3000/api/characters/index');
-        let data = await response.json();
-        setCharacters(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []); // Empty dependency array to run only once when the component mounts
-
-  useEffect(() => {
-    if (characters) {
-      const canvas = canvasRef.current;
-     
-      // Calculate coordinates based on ratios and canvas size
-      Object.keys(characters).forEach((character) => {
-        const [xRatio, yRatio] = characters[character].ratio;
-        const xCoord = (xRatio / 100) * canvas.clientWidth;
-        const yCoord = (yRatio / 100) * canvas.clientHeight;
-
-        characters[character].coords = [xCoord, yCoord];
-      });
-    }
-  }, [characters]);
-
   const handleClick = (e) => {
     const canvas = canvasRef.current;
     const boundingRect = canvas.getBoundingClientRect();
@@ -61,11 +31,40 @@ const MainGame = () => {
     setShowTargetingBox((prev) => !prev);
   };
 
+  const onCharacterSelect = async (character, boxCoords) => {
+    // Post the character, box coordinates and canvas dimensions to the backend
+    const canvas = canvasRef.current;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    try {
+      const response = await fetch('http://localhost:3000/api/characters/tagging', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          character: character,
+          boxCoords: boxCoords,
+          canvas: { width, height}
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Tagging successful!', result);
+      } else {
+        console.error('Tagging failed!');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="main-game">
       <canvas ref={canvasRef} onClick={(e) => handleClick(e)}></canvas>
       {showTargetingBox && (
-        <TargetingBox left={targetingBoxCoords.x} top={targetingBoxCoords.y}/>
+        <TargetingBox left={targetingBoxCoords.x} top={targetingBoxCoords.y} onCharacterSelect={onCharacterSelect}/>
       )}
     </div>
   );
